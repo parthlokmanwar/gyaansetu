@@ -20,7 +20,7 @@ auth.onAuthStateChanged((user) => {
     if (loginItem) loginItem.style.display = 'none';
     if (userItem) userItem.style.display = 'flex';
 
-    // Fetch credits
+    // Fetch credits live
     db.collection('users').doc(user.uid).onSnapshot(doc => {
       if (doc.exists) {
         currentCredits = doc.data().credits || 0;
@@ -32,6 +32,11 @@ auth.onAuthStateChanged((user) => {
     currentCredits = 0;
     if (loginItem) loginItem.style.display = 'block';
     if (userItem) userItem.style.display = 'none';
+  }
+
+  // KEY FIX: Re-render mentors after auth resolves so own-card filter is guaranteed to apply
+  if (document.getElementById('mentorsGrid') && allMentors.length > 0) {
+    renderMentors();
   }
 });
 
@@ -225,6 +230,7 @@ async function openTutorial(id) {
 // ---- Browse Page ----
 let allTutorials = [];
 let activeCategory = 'All';
+let activeLang = 'All';
 let searchQuery = '';
 
 function initBrowsePage() {
@@ -261,6 +267,16 @@ function initBrowsePage() {
       renderTutorials();
     });
   });
+
+  // Language filter
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeLang = btn.dataset.lang;
+      renderTutorials();
+    });
+  });
 }
 
 function renderTutorials() {
@@ -273,6 +289,11 @@ function renderTutorials() {
   // Category filter
   if (activeCategory !== 'All') {
     filtered = filtered.filter(t => t.category === activeCategory);
+  }
+
+  // Language filter
+  if (activeLang !== 'All') {
+    filtered = filtered.filter(t => (t.language || 'English') === activeLang);
   }
 
   // Live search
@@ -362,7 +383,8 @@ function initSubmitPage() {
         category,
         language,
         notes,
-        contributorName: contributorName || 'Anonymous',
+        contributorName: contributorName || (currentUser ? 'User' : 'Anonymous'),
+        userId: currentUser ? currentUser.uid : null,
         views: 0,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -494,16 +516,15 @@ function initMentorsPage() {
 
   if (!grid) return;
 
-  // Wait for auth FIRST, then subscribe to users — fixes race condition
+  // Start incoming request listener once auth is confirmed
   auth.onAuthStateChanged(user => {
-    // Start listening to incoming session requests if logged in
     if (user) startIncomingRequestListener(user.uid);
+  });
 
-    // Now load mentors (currentUser will be set correctly)
-    db.collection('users').onSnapshot(snapshot => {
-      allMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderMentors(); // currentUser is now guaranteed to be set or null
-    });
+  // Load mentors immediately — global auth listener will re-render once currentUser is set
+  db.collection('users').onSnapshot(snapshot => {
+    allMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderMentors();
   });
 
   if (searchInput) {
@@ -721,17 +742,34 @@ document.addEventListener('DOMContentLoaded', () => {
     initHomePage();
   }
 
-  // ---- PWA Injection ----
+  // ---- PWA Injection + Install Button ----
   if ('serviceWorker' in navigator) {
     const swPath = window.location.pathname.includes('/pages/') ? '../sw.js' : 'sw.js';
-    navigator.serviceWorker.register(swPath).catch(err => console.log('SW Registration failed: ', err));
+    navigator.serviceWorker.register(swPath).catch(err => console.log('SW reg failed:', err));
   }
 
   const manifestLink = document.createElement('link');
   manifestLink.rel = 'manifest';
   manifestLink.href = window.location.pathname.includes('/pages/') ? '../manifest.json' : 'manifest.json';
   document.head.appendChild(manifestLink);
-});
+
+  // Show "Install App" button when browser fires beforeinstallprompt
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    // Inject an install button into the navbar
+    const userItem = document.getElementById('navUserItem');
+    if (userItem && !document.getElementById('pwaInstallBtn')) {
+      const btn = document.createElement('button');
+      btn.id = 'pwaInstallBtn';
+      btn.textContent = '📲 Install App';
+      btn.style.cssText = 'background:#22c55e;color:white;border:none;border-radius:99px;padding:5px 12px;font-size:0.78rem;font-weight:700;cursor:pointer;';
+      btn.onclick = () => { deferredInstallPrompt.prompt(); };
+      userItem.appendChild(btn);
+    }
+  });
+}); // End DOMContentLoaded
 
 // ---- Dashboard Page Logic ----
 function initDashboardPage() {
@@ -795,15 +833,21 @@ function initDashboardPage() {
       });
     }
 
-    // Load my submissions
+    // Load my submissions - query by userId (reliable) falling back to name
     const subList = document.getElementById('dashSubmissions');
-    const submissionsSnap = await db.collection('tutorials')
-      .where('contributorName', '==', profile.name || 'Anonymous')
-      .orderBy('createdAt', 'desc')
-      .limit(10)
-      .get();
+    let submissionsSnap;
+    try {
+      submissionsSnap = await db.collection('tutorials')
+        .where('userId', '==', user.uid)
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get();
+    } catch(e) {
+      // Fallback if no index or old data
+      submissionsSnap = { empty: true, size: 0, forEach: () => {} };
+    }
     
-    document.getElementById('dashSubmitCount').textContent = submissionsSnap.size;
+    document.getElementById('dashSubmitCount').textContent = submissionsSnap.size || 0;
 
     if (!submissionsSnap.empty) {
       subList.innerHTML = '';

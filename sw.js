@@ -1,8 +1,8 @@
-// GyaanSetu Service Worker — Network First Strategy v4
+// GyaanSetu Service Worker — Network First Strategy v5
 // This ensures users ALWAYS get the latest version of the site.
 // We only return cached files if the network request fails (offline fallback).
 
-const CACHE_NAME = 'gyaansetu-v4';
+const CACHE_NAME = 'gyaansetu-v5';
 const OFFLINE_ASSETS = [
   './',
   './index.html',
