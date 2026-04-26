@@ -184,7 +184,7 @@ function buildTutorialCard(tutorial) {
         <span class="card-thumb-placeholder">${icon}</span>
         <div class="card-play">▶</div>
         <span class="card-category-badge badge-${catClass}">${tutorial.category}</span>
-        ${tutorial.language && tutorial.language !== 'English' ? `<span class="card-category-badge" style="background:#edf2f7;color:#4a5568;margin-left:4px;">🔤 ${tutorial.language}</span>` : ''}
+        <span class="badge-lang">${tutorial.language || 'English'}</span>
         <div class="card-views">👁 ${views}</div>
       </div>
       <div class="card-body">

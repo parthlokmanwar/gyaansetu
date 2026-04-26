@@ -382,6 +382,20 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .badge-maths     { background: var(--cat-maths); }
 .badge-digital   { background: var(--cat-digital); }
 
+.badge-lang {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--primary-light);
+  padding: 4px 10px;
+  border-radius: 40px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+}
+
 .card-views {
   position: absolute;
   bottom: 10px;
@@ -518,6 +532,25 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .filter-btn[data-cat="English"].active   { background: var(--cat-english); border-color: var(--cat-english); }
 .filter-btn[data-cat="Maths"].active     { background: var(--cat-maths); border-color: var(--cat-maths); }
 .filter-btn[data-cat="Digital Skills"].active { background: var(--cat-digital); border-color: var(--cat-digital); }
+
+.lang-btn {
+  padding: 6px 16px;
+  border-radius: 40px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  color: var(--text-medium);
+  background: white;
+  transition: var(--transition);
+}
+
+.lang-btn:hover { border-color: var(--primary-light); color: var(--primary-light); }
+.lang-btn.active {
+  background: var(--off-white);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
 
 /* =============================================
    BROWSE HEADER
