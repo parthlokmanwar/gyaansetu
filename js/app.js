@@ -201,22 +201,24 @@ function buildTutorialCard(tutorial) {
 async function openTutorial(id) {
   if (!currentUser) {
     alert("Please log in or sign up first to watch tutorials!");
+    window.location.href = window.location.pathname.includes('/pages/') ? 'login.html' : 'pages/login.html';
     return;
   }
   if (currentCredits <= 0) {
-    alert("You have 0 credits! 🛑 You must teach a session or submit a new tutorial to earn more credits.");
+    alert("You have 0 credits! 🛑 Submit a new tutorial to earn +15 credits and keep learning!");
     return;
   }
   
-  // Deduct 1 credit
+  // Deduct 1 credit AND push to watchedHistory
   await db.collection('users').doc(currentUser.uid).update({
-    credits: firebase.firestore.FieldValue.increment(-1)
+    credits: firebase.firestore.FieldValue.increment(-1),
+    watchedHistory: firebase.firestore.FieldValue.arrayUnion(id)
   });
 
   if (window.location.pathname.includes('/pages/')) {
-    window.location.href = `detail.html?id=${id}`; // Already in pages folder
+    window.location.href = `detail.html?id=${id}`;
   } else {
-    window.location.href = `pages/detail.html?id=${id}`; // From root folder
+    window.location.href = `pages/detail.html?id=${id}`;
   }
 }
 
@@ -588,6 +590,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initDetailPage();
   } else if (path.includes('mentors')) {
     initMentorsPage();
+  } else if (path.includes('dashboard')) {
+    initDashboardPage();
   } else {
     // Try all (for pages/ subfolder)
     initHomePage();
@@ -608,3 +612,94 @@ document.addEventListener('DOMContentLoaded', () => {
   manifestLink.href = window.location.pathname.includes('/pages/') ? '../manifest.json' : 'manifest.json';
   document.head.appendChild(manifestLink);
 });
+
+// ---- Dashboard Page Logic ----
+function initDashboardPage() {
+  const dashContent = document.getElementById('dashContent');
+  const dashPrompt = document.getElementById('dashLoginPrompt');
+  if (!dashContent) return;
+
+  // Watch auth state, but we need to wait since auth fires async
+  const unsub = auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      dashPrompt.style.display = 'block';
+      dashContent.style.display = 'none';
+      return;
+    }
+    dashPrompt.style.display = 'none';
+    dashContent.style.display = 'block';
+
+    // Load user profile
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    if (!userDoc.exists) return;
+    const profile = userDoc.data();
+    const initials = getInitials(profile.name);
+
+    document.getElementById('dashAvatar').textContent = initials;
+    document.getElementById('dashName').textContent = profile.name || 'Anonymous';
+    document.getElementById('dashBio').textContent = profile.bio || 'No bio yet.';
+    document.getElementById('dashSubjectBadge').textContent = '🎯 Strong in: ' + (profile.strongSubject || '—');
+    document.getElementById('dashRating').textContent = (profile.rating || 5.0).toFixed(1);
+
+    // Credits ring animation
+    const credits = profile.credits || 0;
+    document.getElementById('dashCredits').textContent = credits;
+    const maxCredits = 50;
+    const pct = Math.min(credits / maxCredits, 1);
+    const circumference = 239;
+    document.getElementById('creditCircle').style.strokeDashoffset = circumference - (pct * circumference);
+
+    const watchedIds = profile.watchedHistory || [];
+    document.getElementById('dashWatchCount').textContent = watchedIds.length;
+
+    // Load watched history titles
+    const histList = document.getElementById('dashWatchHistory');
+    if (watchedIds.length > 0) {
+      histList.innerHTML = '<li style="font-size:0.8rem;color:var(--text-light);padding:4px 12px;">Most recent first</li>';
+      // Fetch last 10 unique watched
+      const uniqueIds = [...new Set(watchedIds)].slice(-10).reverse();
+      const promises = uniqueIds.map(id => db.collection('tutorials').doc(id).get());
+      const docs = await Promise.all(promises);
+      docs.forEach(doc => {
+        if (!doc.exists) return;
+        const t = doc.data();
+        const catClass = getCategoryClass(t.category);
+        histList.innerHTML += `
+          <li class="history-item" onclick="openTutorial('${doc.id}')" style="cursor:pointer;">
+            <div class="history-icon" style="background:var(--${catClass === 'coding' ? 'primary' : catClass === 'english' ? 'secondary' : 'accent'}-light, #edf2f7);">${CATEGORY_ICONS[t.category] || '🎓'}</div>
+            <div class="history-text">
+              <div class="history-title">${t.title}</div>
+              <div class="history-meta">${t.category} &bull; -1 credit</div>
+            </div>
+          </li>`;
+      });
+    }
+
+    // Load my submissions
+    const subList = document.getElementById('dashSubmissions');
+    const submissionsSnap = await db.collection('tutorials')
+      .where('contributorName', '==', profile.name || 'Anonymous')
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+    
+    document.getElementById('dashSubmitCount').textContent = submissionsSnap.size;
+
+    if (!submissionsSnap.empty) {
+      subList.innerHTML = '';
+      submissionsSnap.forEach(doc => {
+        const t = doc.data();
+        subList.innerHTML += `
+          <li class="history-item" onclick="openTutorial('${doc.id}')" style="cursor:pointer;">
+            <div class="history-icon" style="background:#f0fff4;">📤</div>
+            <div class="history-text">
+              <div class="history-title">${t.title}</div>
+              <div class="history-meta">${t.category} &bull; ${t.views || 0} views &bull; +15 credits earned</div>
+            </div>
+          </li>`;
+      });
+    }
+
+    unsub(); // stop listening after first load
+  });
+}

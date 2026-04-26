@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dashboard — GyaanSetu</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
+  <style>
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .dash-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .dash-card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+      margin-bottom: 12px;
+    }
+    .dash-stat-number {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .dash-stat-sub {
+      font-size: 0.82rem;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+    .credit-ring-wrap {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .credit-ring {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+    }
+    .credit-ring svg { transform: rotate(-90deg); }
+    .credit-ring-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .credit-ring-label { font-size: 0.55rem; font-weight: 600; color: var(--text-light); margin-top: -2px; }
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .history-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--off-white);
+      border-radius: calc(var(--radius) - 4px);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .history-item:hover { border-color: var(--primary); transform: translateX(3px); }
+    .history-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .history-text { flex: 1; }
+    .history-title { font-size: 0.88rem; font-weight: 600; color: var(--text-dark); line-height: 1.3; }
+    .history-meta { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+    .empty-state {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 28px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌉</div>
+      Gyaan<span>Setu</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="browse.html">Browse</a></li>
+      <li><a href="mentors.html">Mentors</a></li>
+      <li><a href="about.html">About</a></li>
+      <li id="navLoginItem"><a href="login.html" style="color:var(--secondary-light);font-weight:700;">Login</a></li>
+      <li id="navUserItem" style="display:none;align-items:center;gap:10px;">
+        <span id="navCredits" style="color:var(--accent);font-weight:700;" title="Learning Credits">★ 0</span>
+        <a href="dashboard.html" id="navDashLink" style="color:white;font-size:0.85rem;text-decoration:underline;">Dashboard</a>
+        <button id="navLogoutBtn" style="color:white;text-decoration:underline;font-size:0.85rem;">Logout</button>
+      </li>
+      <li><a href="submit.html" class="nav-submit-btn">+ Submit</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:linear-gradient(135deg,var(--primary),#1E5F8C);color:white;padding:36px 0 30px;">
+  <div class="container">
+    <h1 style="font-family:'Poppins',sans-serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;margin-bottom:4px;">My Dashboard</h1>
+    <p style="opacity:0.8;font-size:0.92rem;">Your personal learning journey on GyaanSetu</p>
+  </div>
+</div>
+
+<section class="page-section">
+  <div class="container">
+
+    <!-- Login Prompt -->
+    <div id="dashLoginPrompt" style="display:none;text-align:center;padding:60px 20px;">
+      <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+      <h2 style="font-family:'Poppins',sans-serif;margin-bottom:8px;">Please Log In First</h2>
+      <p style="color:var(--text-medium);margin-bottom:24px;">Create a free account to see your personal journey!</p>
+      <a href="login.html" class="submit-btn" style="display:inline-block;text-decoration:none;">Go to Login</a>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashContent" style="display:none;">
+
+      <!-- Profile Row -->
+      <div class="profile-row" id="dashProfile">
+        <div class="profile-avatar-lg" id="dashAvatar">?</div>
+        <div style="flex:1;">
+          <div style="font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text-dark);" id="dashName">Loading...</div>
+          <div style="font-size:0.85rem;color:var(--text-medium);margin-top:2px;" id="dashBio">—</div>
+          <span class="badge-pill" id="dashSubjectBadge" style="margin-top:8px;background:var(--primary-light);color:var(--primary);">—</span>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="dash-grid">
+        <!-- Credits -->
+        <div class="dash-card">
+          <div class="dash-card-title">⭐ Learning Credits</div>
+          <div class="credit-ring-wrap">
+            <div class="credit-ring">
+              <svg width="88" height="88" viewBox="0 0 88 88">
+                <circle cx="44" cy="44" r="38" fill="none" stroke="#e8edf5" stroke-width="9"/>
+                <circle id="creditCircle" cx="44" cy="44" r="38" fill="none" stroke="var(--primary)" stroke-width="9"
+                  stroke-dasharray="239" stroke-dashoffset="239" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;"/>
+              </svg>
+              <div class="credit-ring-text">
+                <span id="dashCredits">0</span>
+                <span class="credit-ring-label">CREDITS</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.88rem;color:var(--text-medium);line-height:1.6;">
+                <div>🎬 Watch video: <strong>-1 credit</strong></div>
+                <div>📤 Submit tutorial: <strong>+15 credits</strong></div>
+                <div style="margin-top:8px;padding:8px;background:var(--off-white);border-radius:8px;font-size:0.8rem;color:var(--text-light);">Credits reset to 0 when you run out. Submit more to keep learning!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="dash-card">
+          <div class="dash-card-title">📊 Your Impact</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <div class="dash-stat-number" id="dashWatchCount">0</div>
+              <div class="dash-stat-sub">Videos Watched</div>
+            </div>
+            <div>
+              <div class="dash-stat-number" id="dashSubmitCount">0</div>
+              <div class="dash-stat-sub">Tutorials Submitted</div>
+            </div>
+            <div>
+              <div class="dash-stat-number" id="dashRating">5.0</div>
+              <div class="dash-stat-sub">Mentor Rating</div>
+            </div>
+            <div>
+              <div class="dash-stat-number" id="dashSessionCount">0</div>
+              <div class="dash-stat-sub">Classroom Sessions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watch History & Submissions -->
+      <div class="dash-grid">
+        <!-- Watch History -->
+        <div class="dash-card">
+          <div class="dash-card-title">🎬 Watch History</div>
+          <ul class="history-list" id="dashWatchHistory">
+            <li class="empty-state">
+              <div class="icon">🎓</div>
+              <div>No videos watched yet</div>
+              <a href="browse.html" style="color:var(--primary);font-weight:600;">Browse Tutorials →</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- My Submissions -->
+        <div class="dash-card">
+          <div class="dash-card-title">📤 My Submissions</div>
+          <ul class="history-list" id="dashSubmissions">
+            <li class="empty-state">
+              <div class="icon">✏️</div>
+              <div>You haven't submitted any tutorials yet</div>
+              <a href="submit.html" style="color:var(--primary);font-weight:600;">Share Your Knowledge →</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="justify-content:center;">
+      <span>© 2026 GyaanSetu — Free Learning for Rural Students &nbsp;|&nbsp; SDG 4</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>
