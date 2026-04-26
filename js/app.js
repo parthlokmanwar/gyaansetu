@@ -649,7 +649,13 @@ function startIncomingRequestListener(uid) {
       snapshot.docChanges().forEach(change => {
         if (change.type === 'added' || change.type === 'modified') {
           const req = change.doc.data();
+          const docId = change.doc.id;
+          
           showSessionToast(`✅ ${req.mentorName} accepted! Joining classroom...`, 'success');
+          
+          // Mark as completed so we don't redirect again if user returns to this page
+          db.collection('sessions').doc(docId).update({ status: 'completed' });
+          
           setTimeout(() => {
             window.location.href = `classroom.html?room=${req.roomId}`;
           }, 1500);
