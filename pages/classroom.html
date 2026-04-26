@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Classroom — GyaanSetu</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
+  <style>
+    .classroom-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--off-white);
+    }
+    .classroom-header {
+      background: var(--primary);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+    .classroom-body {
+      display: flex;
+      flex: 1;
+      height: 100%;
+    }
+    .whiteboard-container {
+      flex: 1;
+      height: 100%;
+      border-right: 1px solid var(--border);
+    }
+    .audio-sidebar {
+      width: 300px;
+      height: 100%;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 768px) {
+      .classroom-body { flex-direction: column-reverse; }
+      .audio-sidebar { width: 100%; height: 180px; flex-shrink: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="classroom-layout">
+  <!-- HEADER -->
+  <div class="classroom-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="mentors.html" style="color:white;text-decoration:none;font-size:1.5rem;">🌉</a>
+      <h2 style="font-size:1.1rem;margin:0;">GyaanSetu Secure Classroom</h2>
+    </div>
+    <div style="font-size:0.85rem;opacity:0.8;">📍 Faceless Audio & Whiteboard Mode</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="classroom-body">
+    <!-- WHITEBOARD -->
+    <div class="whiteboard-container">
+      <iframe id="whiteboard-iframe" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+    
+    <!-- AUDIO ROOM -->
+    <div class="audio-sidebar" id="jitsi-container">
+      <div style="padding:15px;border-bottom:1px solid var(--border);font-size:0.9rem;font-weight:600;color:var(--text-medium);">
+        🎙️ Audio Channel
+      </div>
+      <!-- Jitsi loads here -->
+    </div>
+  </div>
+</div>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('room');
+    
+    if (!roomId) {
+      alert("Invalid Room ID. Returning safely.");
+      window.location.href = 'mentors.html';
+      return;
+    }
+
+    // 1. Embed Collaborative Whiteboard
+    const wbIframe = document.getElementById('whiteboard-iframe');
+    wbIframe.src = `https://wbo.ophir.dev/boards/${roomId}`;
+
+    // 2. Embed Jitsi Audio Call (Faceless)
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: roomId,
+        width: '100%',
+        height: '100%',
+        parentNode: document.getElementById('jitsi-container'),
+        // Force security: audio only, no pre-join screen, remove camera buttons
+        configOverwrite: { 
+          startWithVideoMuted: true,
+          disableVideo: true,
+          prejoinPageEnabled: false,
+          disableDeepLinking: true
+        },
+        interfaceConfigOverwrite: {
+          TOOLBAR_BUTTONS: ['microphone', 'chat', 'hangup', 'tileview'],
+          SHOW_JITSI_WATERMARK: false
+        }
+    };
+    
+    const api = new JitsiMeetExternalAPI(domain, options);
+    
+    api.on('readyToClose', () => {
+      // User clicked hang up. Redirect to rating/mentor page.
+      if(confirm('Session ended. Returning to Mentor directory. You earned +15 Credits for participating!')) {
+         // In a real app we would apply credits via Firebase here directly or via redirect
+         window.location.href = 'mentors.html';
+      } else {
+         window.location.href = 'mentors.html';
+      }
+    });
+
+  });
+</script>
+</body>
+</html>

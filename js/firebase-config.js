@@ -23,6 +23,7 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 
 // =============================================
 // Firestore Security Rules (paste in Firebase Console → Firestore → Rules):

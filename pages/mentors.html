@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial — GyaanSetu</title>
+  <title>Find Mentors — GyaanSetu</title>
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
 </head>
@@ -19,7 +19,7 @@
     <ul class="nav-links">
       <li><a href="../index.html">Home</a></li>
       <li><a href="browse.html">Browse</a></li>
-      <li><a href="mentors.html">Mentors</a></li>
+      <li><a href="mentors.html" class="active">Mentors</a></li>
       <li><a href="about.html">About</a></li>
       <li id="navLoginItem"><a href="login.html" style="color:var(--secondary-light);font-weight:700;">Login</a></li>
       <li id="navUserItem" style="display:none;align-items:center;gap:10px;">
@@ -34,31 +34,45 @@
   </div>
 </nav>
 
-<!-- DETAIL PAGE -->
-<section class="detail-page">
-  <div class="container" style="max-width:820px;">
+<!-- HEADER -->
+<div style="background:linear-gradient(135deg,var(--primary),#1E5F8C);color:white;padding:40px 0 36px;">
+  <div class="container">
+    <h1 style="font-family:'Poppins',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;margin-bottom:8px;">Find a Mentor</h1>
+    <p style="opacity:0.82;font-size:0.97rem;">Search for students who are strong in the subjects you want to learn. Connect in a secure, faceless whiteboard room.</p>
+  </div>
+</div>
 
-    <a href="browse.html" class="back-btn">← Back to Browse</a>
+<!-- SEARCH & FILTER -->
+<div class="container" style="margin-top:-28px;position:relative;z-index:10;">
+  <div class="search-filter-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="mentorSearchInput" class="search-input" placeholder="Search mentors by name or bio..." />
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" data-cat="All">All Subjects</button>
+      <button class="filter-btn" data-cat="Coding">💻 Coding</button>
+      <button class="filter-btn" data-cat="English">📖 English</button>
+      <button class="filter-btn" data-cat="Maths">🔢 Maths</button>
+      <button class="filter-btn" data-cat="Digital Skills">📱 Digital Skills</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Loading -->
-    <div id="detailLoading" class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Loading tutorial...</p>
+<!-- MENTOR DIRECTORY -->
+<section class="page-section" style="padding-top:10px;min-height:50vh;">
+  <div class="container">
+    <div class="browse-header">
+      <h2 class="section-title">Available Mentors</h2>
+      <div class="tutorials-count" id="mentorsCount">Loading mentors...</div>
     </div>
 
-    <!-- Content injected by JS -->
-    <div id="detailContent" style="display:none;"></div>
-
-    <!-- Related / CTA -->
-    <div style="background:white;border-radius:var(--radius);box-shadow:var(--card-shadow);border:1px solid var(--border);padding:24px;text-align:center;">
-      <h3 style="font-family:'Poppins',sans-serif;font-size:1.05rem;color:var(--primary);margin-bottom:8px;">Know something? Teach it! 🎓</h3>
-      <p style="font-size:0.88rem;color:var(--text-medium);margin-bottom:18px;">Help rural students by sharing your own micro-tutorial — completely free.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="submit.html" class="btn-primary" style="font-size:0.9rem;padding:10px 22px;">+ Submit a Tutorial</a>
-        <a href="browse.html" class="btn-outline" style="color:var(--primary);border-color:var(--border);font-size:0.9rem;padding:10px 22px;">Browse More</a>
+    <div class="tutorials-grid" id="mentorsGrid">
+      <div class="loading-spinner" style="grid-column:1/-1">
+        <div class="spinner"></div>
+        <p>Loading mentors...</p>
       </div>
     </div>
-
   </div>
 </section>
 
