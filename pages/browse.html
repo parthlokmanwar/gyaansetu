@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Tutorials — GyaanSetu</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌉</div>
+      Gyaan<span>Setu</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="browse.html" class="active">Browse</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="submit.html" class="nav-submit-btn">+ Submit Tutorial</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:linear-gradient(135deg,var(--primary),#1E5F8C);color:white;padding:40px 0 36px;">
+  <div class="container">
+    <h1 style="font-family:'Poppins',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;margin-bottom:8px;">📚 Browse All Tutorials</h1>
+    <p style="opacity:0.82;font-size:0.97rem;">Free micro-tutorials submitted by college students — for rural learners across India.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<section class="page-section">
+  <div class="container">
+
+    <!-- Search & Filter -->
+    <div class="search-filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search tutorials by title, notes, or contributor..."
+          autocomplete="off"
+        />
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-cat="All">All Subjects</button>
+        <button class="filter-btn" data-cat="Coding">💻 Coding</button>
+        <button class="filter-btn" data-cat="English">📖 English</button>
+        <button class="filter-btn" data-cat="Maths">🔢 Maths</button>
+        <button class="filter-btn" data-cat="Digital Skills">📱 Digital Skills</button>
+      </div>
+    </div>
+
+    <!-- Count + Grid -->
+    <div class="browse-header">
+      <span class="tutorials-count" id="tutorialsCount">Loading...</span>
+      <a href="submit.html" class="btn-primary" style="font-size:0.87rem;padding:8px 18px;">+ Add Tutorial</a>
+    </div>
+
+    <div class="tutorials-grid" id="tutorialsGrid">
+      <div class="loading-spinner" style="grid-column:1/-1">
+        <div class="spinner"></div>
+        <p>Fetching tutorials from the cloud...</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="justify-content:center;">
+      <span>© 2026 GyaanSetu — Free Learning for Rural Students &nbsp;|&nbsp; SDG 4</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  // Pre-select category from URL query param if present
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    if (cat) {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.cat === cat) btn.classList.add('active');
+      });
+      activeCategory = cat;
+    }
+  });
+</script>
+</body>
+</html>

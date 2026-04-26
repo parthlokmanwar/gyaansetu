@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GyaanSetu — Free micro-tutorials for rural students. Learn coding, English, Maths and digital skills. Works on 2G connections." />
+  <title>GyaanSetu — Free Learning for Rural Students</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌉</div>
+      Gyaan<span>Setu</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="pages/browse.html">Browse</a></li>
+      <li><a href="pages/about.html">About</a></li>
+      <li><a href="pages/submit.html" class="nav-submit-btn">+ Submit Tutorial</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag">🎓 SDG 4 — Quality Education for All</div>
+    <h1>
+      Free Learning for<br>
+      <span class="highlight">Rural Students</span> Across India
+    </h1>
+    <p>
+      GyaanSetu bridges the knowledge gap — college students share free micro-tutorials on coding,
+      English, Maths &amp; digital skills. Works on 2G. Costs nothing. Helps everyone.
+    </p>
+    <div class="hero-actions">
+      <a href="pages/browse.html" class="btn-primary">📚 Browse Tutorials</a>
+      <a href="pages/submit.html" class="btn-outline">+ Share Your Knowledge</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-number" id="statsTotal">0</div>
+        <div class="stat-label">Tutorials</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Subjects</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Free</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">2G</div>
+        <div class="stat-label">Friendly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="page-section" style="background:white;">
+  <div class="container">
+    <h2 class="section-title">How GyaanSetu Works</h2>
+    <p class="section-subtitle">Simple, free, and accessible for everyone — no app needed.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px;">
+      <div style="text-align:center;padding:28px 18px;background:var(--off-white);border-radius:var(--radius);border:1px solid var(--border);">
+        <div style="font-size:2.8rem;margin-bottom:14px;">🔍</div>
+        <h3 style="font-family:'Poppins',sans-serif;font-size:1.05rem;margin-bottom:8px;color:var(--primary);">Browse Skills</h3>
+        <p style="font-size:0.88rem;color:var(--text-medium);">Search or filter by Coding, English, Maths, or Digital Skills. Find what you need instantly.</p>
+      </div>
+      <div style="text-align:center;padding:28px 18px;background:var(--off-white);border-radius:var(--radius);border:1px solid var(--border);">
+        <div style="font-size:2.8rem;margin-bottom:14px;">▶️</div>
+        <h3 style="font-family:'Poppins',sans-serif;font-size:1.05rem;margin-bottom:8px;color:var(--primary);">Watch &amp; Learn</h3>
+        <p style="font-size:0.88rem;color:var(--text-medium);">Watch short YouTube videos (max 5 mins) with written notes — on any basic phone.</p>
+      </div>
+      <div style="text-align:center;padding:28px 18px;background:var(--off-white);border-radius:var(--radius);border:1px solid var(--border);">
+        <div style="font-size:2.8rem;margin-bottom:14px;">🤝</div>
+        <h3 style="font-family:'Poppins',sans-serif;font-size:1.05rem;margin-bottom:8px;color:var(--primary);">Share Knowledge</h3>
+        <p style="font-size:0.88rem;color:var(--text-medium);">College students upload tutorials — become a mentor, build your portfolio, help thousands.</p>
+      </div>
+      <div style="text-align:center;padding:28px 18px;background:var(--off-white);border-radius:var(--radius);border:1px solid var(--border);">
+        <div style="font-size:2.8rem;margin-bottom:14px;">📈</div>
+        <h3 style="font-family:'Poppins',sans-serif;font-size:1.05rem;margin-bottom:8px;color:var(--primary);">Grow Together</h3>
+        <p style="font-size:0.88rem;color:var(--text-medium);">Skills lead to jobs, digital empowerment, and a better future for rural youth.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== RECENT TUTORIALS ========== -->
+<section class="page-section">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px;">
+      <div>
+        <h2 class="section-title">Latest Tutorials</h2>
+        <p class="section-subtitle">Recently added by our student contributors</p>
+      </div>
+      <a href="pages/browse.html" class="btn-primary" style="white-space:nowrap;">View All →</a>
+    </div>
+    <div class="tutorials-grid" id="recentGrid">
+      <div class="loading-spinner" style="grid-column:1/-1">
+        <div class="spinner"></div>
+        <p>Loading tutorials...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SDG 4 SECTION ========== -->
+<section class="sdg-section">
+  <div class="container">
+    <h2 class="section-title">Our SDG 4 Commitment</h2>
+    <p class="section-subtitle">Quality Education for All — Aligned with UN Sustainable Development Goals</p>
+    <div class="sdg-grid">
+      <div class="sdg-card">
+        <div class="sdg-target">SDG 4.1</div>
+        <h4>Free Quality Education</h4>
+        <p>All tutorials are 100% free — removing financial barriers for rural students who cannot afford coaching.</p>
+      </div>
+      <div class="sdg-card">
+        <div class="sdg-target">SDG 4.4</div>
+        <h4>Skills for Employment</h4>
+        <p>Coding, English &amp; digital skills equip rural youth with tools for the modern economy.</p>
+      </div>
+      <div class="sdg-card">
+        <div class="sdg-target">SDG 4.6</div>
+        <h4>Literacy &amp; Numeracy</h4>
+        <p>Maths tricks and English grammar tutorials support learners who missed formal schooling.</p>
+      </div>
+      <div class="sdg-card">
+        <div class="sdg-target">SDG 4.7</div>
+        <h4>Digital Life Skills</h4>
+        <p>UPI payments, email, internet safety — crucial life skills for 2026 and beyond.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="page-section" style="background:white;text-align:center;">
+  <div class="container" style="max-width:620px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🌉</div>
+    <h2 class="section-title" style="text-align:center;">Ready to Bridge the Gap?</h2>
+    <p style="color:var(--text-medium);margin-bottom:28px;font-size:1rem;">
+      You have knowledge. Rural students need it. Submit a free micro-tutorial today — no experience required.
+    </p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="pages/submit.html" class="btn-primary" style="font-size:1rem;padding:14px 32px;">+ Submit a Tutorial</a>
+      <a href="pages/browse.html" class="btn-outline" style="color:var(--primary);border-color:var(--border);font-size:1rem;padding:14px 32px;">Browse Tutorials</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:12px;">
+          <div class="nav-logo-icon">🌉</div>
+          Gyaan<span style="color:var(--secondary-light)">Setu</span>
+        </div>
+        <p>A free, lightweight platform connecting college students with rural learners across India. Built with ❤️ for SDG 4.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="pages/browse.html">Browse Tutorials</a></li>
+          <li><a href="pages/submit.html">Submit Tutorial</a></li>
+          <li><a href="pages/about.html">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Subjects</h4>
+        <ul>
+          <li><a href="pages/browse.html?cat=Coding">💻 Coding</a></li>
+          <li><a href="pages/browse.html?cat=English">📖 English</a></li>
+          <li><a href="pages/browse.html?cat=Maths">🔢 Maths</a></li>
+          <li><a href="pages/browse.html?cat=Digital Skills">📱 Digital Skills</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 GyaanSetu. Built for SDG 4 — Quality Education for All.</span>
+      <span class="sdg-badge">🌍 SDG 4 — Quality Education</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

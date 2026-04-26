@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Tutorial — GyaanSetu</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌉</div>
+      Gyaan<span>Setu</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="browse.html">Browse</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="submit.html" class="nav-submit-btn active">+ Submit Tutorial</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:linear-gradient(135deg,var(--primary),#1E5F8C);color:white;padding:40px 0 36px;">
+  <div class="container">
+    <h1 style="font-family:'Poppins',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;margin-bottom:8px;">+ Share Your Knowledge</h1>
+    <p style="opacity:0.82;font-size:0.97rem;">Submit a free micro-tutorial — help rural students learn at no cost.</p>
+  </div>
+</div>
+
+<!-- FORM SECTION -->
+<section class="form-section">
+  <div class="container">
+
+    <!-- Tips Card -->
+    <div style="max-width:680px;margin:0 auto 24px;background:linear-gradient(135deg,#EBF8FF,#F0FFF4);border:1px solid #BEE3F8;border-radius:var(--radius);padding:20px 24px;">
+      <h3 style="font-family:'Poppins',sans-serif;font-size:1rem;color:var(--primary);margin-bottom:10px;">📌 Guidelines for Contributors</h3>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">
+        <li style="font-size:0.87rem;color:var(--text-medium);">✅ Keep videos under <strong>5 minutes</strong> — short is better for 2G connections</li>
+        <li style="font-size:0.87rem;color:var(--text-medium);">✅ Upload to YouTube as <strong>unlisted</strong> — then paste the link here</li>
+        <li style="font-size:0.87rem;color:var(--text-medium);">✅ Write clear notes — rural students may re-read them without rewatching</li>
+        <li style="font-size:0.87rem;color:var(--text-medium);">✅ Suggested topics: Basic HTML, English grammar, multiplication tricks, UPI, how to email</li>
+        <li style="font-size:0.87rem;color:var(--text-medium);">❌ No paid content, no promotional material, no inappropriate content</li>
+      </ul>
+    </div>
+
+    <div class="form-card">
+      <div id="formAlert" class="alert"></div>
+
+      <!-- FORM -->
+      <form id="submitForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="title">Tutorial Title <span class="required">*</span></label>
+          <input type="text" id="title" name="title" class="form-input" placeholder="e.g., Introduction to HTML Tags" required maxlength="120" />
+          <div class="form-hint">Keep it clear and descriptive (max 120 characters)</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="youtubeLink">YouTube Video Link <span class="required">*</span></label>
+          <input type="url" id="youtubeLink" name="youtubeLink" class="form-input" placeholder="https://www.youtube.com/watch?v=..." required />
+          <div class="form-hint">Paste the full YouTube URL. Both youtube.com and youtu.be links work.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category">Subject Category <span class="required">*</span></label>
+          <select id="category" name="category" class="form-select" required>
+            <option value="" disabled selected>-- Select a Subject --</option>
+            <option value="Coding">💻 Coding</option>
+            <option value="English">📖 English</option>
+            <option value="Maths">🔢 Maths</option>
+            <option value="Digital Skills">📱 Digital Skills</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="notes">Notes &amp; Summary <span class="required">*</span></label>
+          <textarea id="notes" name="notes" class="form-textarea" rows="6" placeholder="Write a short summary of what this tutorial covers. Include key points, steps, or important terms. Rural students may read this without watching the video." required></textarea>
+          <div class="form-hint">Minimum 50 characters. Be clear and simple — assume the learner is a beginner.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="contributorName">Your Name</label>
+          <input type="text" id="contributorName" name="contributorName" class="form-input" placeholder="e.g., Priya Sharma (optional)" maxlength="60" />
+          <div class="form-hint">Leave blank to submit as Anonymous.</div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          🚀 Submit Tutorial
+        </button>
+
+      </form>
+
+      <!-- SUCCESS STATE -->
+      <div id="formSuccess" class="form-success">
+        <div class="success-icon">🎉</div>
+        <h3>Tutorial Submitted Successfully!</h3>
+        <p style="margin-bottom:24px;">Thank you for helping rural students learn for free. Your tutorial is now live on GyaanSetu.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="browse.html" class="btn-primary">📚 View All Tutorials</a>
+          <button onclick="location.reload()" class="btn-outline" style="color:var(--primary);border-color:var(--border);">+ Add Another</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="justify-content:center;">
+      <span>© 2026 GyaanSetu — Free Learning for Rural Students &nbsp;|&nbsp; SDG 4</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>
