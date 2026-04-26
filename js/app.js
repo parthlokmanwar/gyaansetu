@@ -179,6 +179,7 @@ function buildTutorialCard(tutorial) {
         <span class="card-thumb-placeholder">${icon}</span>
         <div class="card-play">▶</div>
         <span class="card-category-badge badge-${catClass}">${tutorial.category}</span>
+        ${tutorial.language && tutorial.language !== 'English' ? `<span class="card-category-badge" style="background:#edf2f7;color:#4a5568;margin-left:4px;">🔤 ${tutorial.language}</span>` : ''}
         <div class="card-views">👁 ${views}</div>
       </div>
       <div class="card-body">
@@ -339,6 +340,7 @@ function initSubmitPage() {
     const title = form.title.value.trim();
     const youtubeLink = form.youtubeLink.value.trim();
     const category = form.category.value;
+    const language = form.language ? form.language.value : 'English';
     const notes = form.notes.value.trim();
     const contributorName = form.contributorName.value.trim();
 
@@ -356,6 +358,7 @@ function initSubmitPage() {
         title,
         youtubeLink,
         category,
+        language,
         notes,
         contributorName: contributorName || 'Anonymous',
         views: 0,
@@ -429,6 +432,12 @@ function initDetailPage() {
               <div class="meta-item">📅 ${date}</div>
               <div class="meta-item">👁 ${(t.views || 0) + 1} views</div>
               <div class="meta-item">🏷️ ${t.category}</div>
+            </div>
+            <div style="margin-top:16px;margin-bottom:12px;">
+              <a href="whatsapp://send?text=Check out this awesome tutorial on GyaanSetu! ${encodeURIComponent(window.location.href)}" 
+                 style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;padding:10px 18px;border-radius:var(--radius);text-decoration:none;font-weight:600;font-size:0.95rem;box-shadow:0 2px 4px rgba(37,211,102,0.2);">
+                💬 Share via WhatsApp
+              </a>
             </div>
             <div class="notes-section">
               <h3>📝 Notes & Summary</h3>
@@ -544,8 +553,9 @@ function renderMentors() {
           <span class="card-category-badge badge-${catClass}" style="position:static;display:inline-block;margin-bottom:12px;">${m.strongSubject || 'General'}</span>
           <div class="card-notes" style="font-style:italic;">"${m.bio || 'Happy to help anywhere I can!'}"</div>
         </div>
-        <div style="padding:18px;border-top:1px solid var(--border);background:var(--off-white);">
-          <button onclick="startClassroom('${m.id}')" class="submit-btn" style="padding:10px;font-size:0.9rem;">🤝 Start Session</button>
+        <div style="padding:18px;border-top:1px solid var(--border);background:var(--off-white);display:flex;gap:8px;">
+          <button onclick="startClassroom('${m.id}')" class="submit-btn" style="flex:1;padding:10px;font-size:0.9rem;">🤝 Start Session</button>
+          <a href="whatsapp://send?text=I found a great ${m.strongSubject} Mentor on GyaanSetu! Join here: https://parthlokmanwar.github.io/gyaansetu/pages/mentors.html" style="background:#25D366;color:white;display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius);text-decoration:none;font-size:1.1rem;box-shadow:0 2px 4px rgba(37,211,102,0.2);">💬</a>
         </div>
       </div>
     `;
@@ -585,4 +595,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initDetailPage();
     initMentorsPage();
   }
+
+  // ---- PWA Injection ----
+  if ('serviceWorker' in navigator) {
+    const swPath = window.location.pathname.includes('/pages/') ? '../sw.js' : 'sw.js';
+    navigator.serviceWorker.register(swPath).catch(err => console.log('SW Registration failed: ', err));
+  }
+
+  const manifestLink = document.createElement('link');
+  manifestLink.rel = 'manifest';
+  manifestLink.href = window.location.pathname.includes('/pages/') ? '../manifest.json' : 'manifest.json';
+  document.head.appendChild(manifestLink);
 });
