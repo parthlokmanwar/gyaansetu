@@ -143,11 +143,12 @@ function formatDate(timestamp) {
 }
 
 function getInitials(name) {
-  if (!name) return '?';
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  if (!name || typeof name !== 'string' || name.trim() === '') return '?';
+  return name.trim().split(/\s+/).map(w => w ? w[0] : '').join('').toUpperCase().slice(0, 2);
 }
 
 function extractYouTubeId(url) {
+  if (!url || typeof url !== 'string') return null;
   const regex = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
@@ -820,8 +821,8 @@ function initDashboardPage() {
     const histList = document.getElementById('dashWatchHistory');
     if (watchedIds.length > 0) {
       histList.innerHTML = '<li style="font-size:0.8rem;color:var(--text-light);padding:4px 12px;">Most recent first</li>';
-      // Fetch last 10 unique watched
-      const uniqueIds = [...new Set(watchedIds)].slice(-10).reverse();
+      // Fetch last 10 unique valid watched IDs
+      const uniqueIds = [...new Set(watchedIds)].filter(id => id && typeof id === 'string').slice(-10).reverse();
       const promises = uniqueIds.map(id => db.collection('tutorials').doc(id).get());
       const docs = await Promise.all(promises);
       docs.forEach(doc => {
