@@ -523,6 +523,12 @@ function renderMentors() {
   if (!grid) return;
 
   let filtered = allMentors;
+
+  // Never show the currently logged-in user their own card
+  if (currentUser) {
+    filtered = filtered.filter(m => m.id !== currentUser.uid);
+  }
+
   if (activeMentorCat !== 'All') {
     filtered = filtered.filter(m => m.strongSubject === activeMentorCat);
   }
