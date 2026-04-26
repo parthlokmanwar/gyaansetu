@@ -7,124 +7,305 @@
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌉</text></svg>" />
   <style>
-    .classroom-layout {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-      background: var(--off-white);
-    }
-    .classroom-header {
-      background: var(--primary);
-      color: white;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { height: 100vh; display: flex; flex-direction: column; background: #0d1117; color: white; font-family: 'Inter', sans-serif; }
+
+    .cr-header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
       padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: var(--shadow);
-      z-index: 100;
+      flex-shrink: 0;
     }
-    .classroom-body {
+    .cr-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-weight: 700; font-size: 1rem; }
+    .cr-badge { background: #388bfd22; color: #79c0ff; font-size: 0.75rem; padding: 3px 10px; border-radius: 99px; border: 1px solid #388bfd44; }
+    .cr-room-id { font-size: 0.75rem; color: #8b949e; }
+
+    .cr-body {
+      flex: 1;
       display: flex;
+      overflow: hidden;
+    }
+
+    /* Whiteboard takes majority */
+    .cr-whiteboard {
       flex: 1;
       height: 100%;
+      border-right: 1px solid #30363d;
     }
-    .whiteboard-container {
-      flex: 1;
+    .cr-whiteboard iframe {
+      width: 100%;
       height: 100%;
-      border-right: 1px solid var(--border);
+      border: none;
     }
-    .audio-sidebar {
-      width: 300px;
-      height: 100%;
-      background: white;
+
+    /* Audio panel */
+    .cr-audio-panel {
+      width: 320px;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
+      background: #161b22;
     }
+    .cr-panel-title {
+      padding: 14px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #8b949e;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .cr-call-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 16px;
+    }
+    .cr-avatar-ring {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1f6feb, #388bfd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 0 0 rgba(56,139,253,0.5);
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(56,139,253,0.5); }
+      50%  { box-shadow: 0 0 0 14px rgba(56,139,253,0); }
+      100% { box-shadow: 0 0 0 0 rgba(56,139,253,0); }
+    }
+    .cr-status { font-size: 0.85rem; color: #3fb950; font-weight: 600; }
+    .cr-room-text { 
+      font-size: 0.78rem; 
+      color: #8b949e; 
+      text-align: center; 
+      line-height: 1.5;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      width: 100%;
+    }
+    .cr-room-text strong { color: #e6edf3; display: block; margin-bottom: 4px; }
+    .cr-room-code {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: #79c0ff;
+      font-family: monospace;
+      word-break: break-all;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .cr-room-code:hover { border-color: #388bfd; }
+
+    .cr-join-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .cr-join-btn:hover { background: #2ea043; transform: translateY(-1px); }
+
+    .cr-whatsapp-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .cr-whatsapp-btn:hover { background: #1ebe5d; }
+
+    .cr-end-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #da3633;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .cr-end-btn:hover { background: #f85149; }
+
+    .cr-divider { width: 100%; height: 1px; background: #30363d; }
+    .cr-info { padding: 12px 16px; font-size: 0.75rem; color: #6e7681; line-height: 1.5; }
+
     @media (max-width: 768px) {
-      .classroom-body { flex-direction: column-reverse; }
-      .audio-sidebar { width: 100%; height: 180px; flex-shrink: 0; }
+      .cr-body { flex-direction: column; }
+      .cr-audio-panel { width: 100%; height: auto; }
+      .cr-whiteboard { height: 55vh; }
+      .cr-call-box { flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 10px; }
+      .cr-avatar-ring { width: 56px; height: 56px; font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
 
-<div class="classroom-layout">
-  <!-- HEADER -->
-  <div class="classroom-header">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <a href="mentors.html" style="color:white;text-decoration:none;font-size:1.5rem;">🌉</a>
-      <h2 style="font-size:1.1rem;margin:0;">GyaanSetu Secure Classroom</h2>
-    </div>
-    <div style="font-size:0.85rem;opacity:0.8;">📍 Faceless Audio & Whiteboard Mode</div>
-  </div>
-
-  <!-- BODY -->
-  <div class="classroom-body">
-    <!-- WHITEBOARD -->
-    <div class="whiteboard-container">
-      <iframe id="whiteboard-iframe" style="width:100%;height:100%;border:none;"></iframe>
-    </div>
-    
-    <!-- AUDIO ROOM -->
-    <div class="audio-sidebar" id="jitsi-container">
-      <div style="padding:15px;border-bottom:1px solid var(--border);font-size:0.9rem;font-weight:600;color:var(--text-medium);">
-        🎙️ Audio Channel
-      </div>
-      <!-- Jitsi loads here -->
-    </div>
-  </div>
+<!-- HEADER -->
+<div class="cr-header">
+  <a href="mentors.html" class="cr-logo">
+    <span style="font-size:1.4rem;">🌉</span>
+    GyaanSetu <span class="cr-badge">🔒 Secure Classroom</span>
+  </a>
+  <div class="cr-room-id" id="headerRoomId">Room: Loading...</div>
 </div>
 
-<script src="https://meet.jit.si/external_api.js"></script>
+<!-- BODY -->
+<div class="cr-body">
+
+  <!-- WHITEBOARD (left) -->
+  <div class="cr-whiteboard">
+    <iframe id="whiteboardIframe" allow="camera; microphone" title="Collaborative Whiteboard"></iframe>
+  </div>
+
+  <!-- AUDIO PANEL (right) -->
+  <div class="cr-audio-panel">
+    <div class="cr-panel-title">🎙️ Audio Call</div>
+
+    <div class="cr-call-box">
+      <div class="cr-avatar-ring" id="userInitials">?</div>
+      <div class="cr-status" id="callStatus">🟢 Room Ready</div>
+
+      <div class="cr-room-text">
+        <strong>Share this link with your friend:</strong>
+        They can join the same whiteboard and audio room!
+      </div>
+
+      <div class="cr-room-code" id="shareLink" title="Click to copy" onclick="copyLink()">
+        Loading room link...
+      </div>
+
+      <!-- Open Jitsi in a proper full tab — works on all devices -->
+      <a id="jitsiLink" href="#" target="_blank" class="cr-join-btn">
+        📞 Join Audio Call (Opens in New Tab)
+      </a>
+
+      <a id="whatsappShare" href="#" class="cr-whatsapp-btn">
+        💬 Invite via WhatsApp
+      </a>
+
+      <div class="cr-divider"></div>
+
+      <button class="cr-end-btn" onclick="endSession()">
+        📵 End Session
+      </button>
+    </div>
+
+    <div class="cr-divider"></div>
+    <div class="cr-info">
+      🔒 <strong>Faceless mode:</strong> Audio only. No camera. Safe for all students.<br><br>
+      📋 <strong>How to use:</strong><br>
+      1. Click "Join Audio Call" to open the voice room.<br>
+      2. Share the link with your friend so they join the same whiteboard.<br>
+      3. Draw and write together in real-time!
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase (for auth check) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/app.js"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const roomId = params.get('room');
-    
-    if (!roomId) {
-      alert("Invalid Room ID. Returning safely.");
-      window.location.href = 'mentors.html';
-      return;
-    }
+    const roomId = params.get('room') || ('gyaansetu_' + Math.random().toString(36).substr(2, 9));
 
-    // 1. Embed Collaborative Whiteboard
-    const wbIframe = document.getElementById('whiteboard-iframe');
-    wbIframe.src = `https://wbo.ophir.dev/boards/${roomId}`;
+    // Update header
+    document.getElementById('headerRoomId').textContent = 'Room: ' + roomId;
 
-    // 2. Embed Jitsi Audio Call (Faceless)
-    const domain = 'meet.jit.si';
-    const options = {
-        roomName: roomId,
-        width: '100%',
-        height: '100%',
-        parentNode: document.getElementById('jitsi-container'),
-        // Force security: audio only, no pre-join screen, remove camera buttons
-        configOverwrite: { 
-          startWithVideoMuted: true,
-          disableVideo: true,
-          prejoinPageEnabled: false,
-          disableDeepLinking: true
-        },
-        interfaceConfigOverwrite: {
-          TOOLBAR_BUTTONS: ['microphone', 'chat', 'hangup', 'tileview'],
-          SHOW_JITSI_WATERMARK: false
-        }
-    };
-    
-    const api = new JitsiMeetExternalAPI(domain, options);
-    
-    api.on('readyToClose', () => {
-      // User clicked hang up. Redirect to rating/mentor page.
-      if(confirm('Session ended. Returning to Mentor directory. You earned +15 Credits for participating!')) {
-         // In a real app we would apply credits via Firebase here directly or via redirect
-         window.location.href = 'mentors.html';
-      } else {
-         window.location.href = 'mentors.html';
+    // Set whiteboard
+    document.getElementById('whiteboardIframe').src = `https://wbo.ophir.dev/boards/${roomId}`;
+
+    // Set Jitsi link — opens in new tab, works on all devices, no CSP issue
+    const jitsiUrl = `https://meet.jit.si/${roomId}`;
+    document.getElementById('jitsiLink').href = jitsiUrl;
+
+    // Set share link
+    const fullLink = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
+    const shareLinkEl = document.getElementById('shareLink');
+    shareLinkEl.textContent = fullLink;
+
+    // WhatsApp share
+    const waMsg = `Join my GyaanSetu classroom!\n\n📋 Whiteboard + Audio Room: ${fullLink}\n\n🎙️ Direct Jitsi audio link: ${jitsiUrl}`;
+    document.getElementById('whatsappShare').href = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+
+    // Auth check - show initials
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        db.collection('users').doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const name = doc.data().name || '';
+            const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+            document.getElementById('userInitials').textContent = initials;
+          }
+        });
       }
     });
-
   });
+
+  function copyLink() {
+    const link = document.getElementById('shareLink').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+      const el = document.getElementById('shareLink');
+      el.textContent = '✅ Link copied!';
+      setTimeout(() => { el.textContent = link; }, 2000);
+    });
+  }
+
+  function endSession() {
+    if (confirm('End this session and return to the Mentors page?')) {
+      window.location.href = 'mentors.html';
+    }
+  }
 </script>
 </body>
 </html>
