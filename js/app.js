@@ -489,15 +489,21 @@ let mentorSearchQuery = '';
 
 function initMentorsPage() {
   const grid = document.getElementById('mentorsGrid');
-  const countEl = document.getElementById('mentorsCount');
   const searchInput = document.getElementById('mentorSearchInput');
   const filterBtns = document.querySelectorAll('.filter-btn');
 
   if (!grid) return;
 
-  db.collection('users').onSnapshot(snapshot => {
-    allMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderMentors();
+  // Wait for auth FIRST, then subscribe to users — fixes race condition
+  auth.onAuthStateChanged(user => {
+    // Start listening to incoming session requests if logged in
+    if (user) startIncomingRequestListener(user.uid);
+
+    // Now load mentors (currentUser will be set correctly)
+    db.collection('users').onSnapshot(snapshot => {
+      allMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderMentors(); // currentUser is now guaranteed to be set or null
+    });
   });
 
   if (searchInput) {
@@ -563,7 +569,7 @@ function renderMentors() {
           <div class="card-notes" style="font-style:italic;">"${m.bio || 'Happy to help anywhere I can!'}"</div>
         </div>
         <div style="padding:18px;border-top:1px solid var(--border);background:var(--off-white);display:flex;gap:8px;">
-          <button onclick="startClassroom('${m.id}')" class="submit-btn" style="flex:1;padding:10px;font-size:0.9rem;">🤝 Start Session</button>
+          <button onclick="sendSessionRequest('${m.id}', '${(m.name||'').replace(/'/g,'')}')" class="submit-btn" style="flex:1;padding:10px;font-size:0.9rem;">🤝 Send Request</button>
           <a href="whatsapp://send?text=I found a great ${m.strongSubject} Mentor on GyaanSetu! Join here: https://parthlokmanwar.github.io/gyaansetu/pages/mentors.html" style="background:#25D366;color:white;display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius);text-decoration:none;font-size:1.1rem;box-shadow:0 2px 4px rgba(37,211,102,0.2);">💬</a>
         </div>
       </div>
@@ -571,14 +577,123 @@ function renderMentors() {
   }).join('');
 }
 
-function startClassroom(mentorId) {
+// ---- Session Request System ----
+async function sendSessionRequest(mentorId, mentorName) {
   if (!currentUser) {
-    alert("Please log in first to connect with mentors!");
+    alert('Please log in first!');
+    window.location.href = 'login.html';
     return;
   }
+
+  // Get requester name from Firestore
+  const userDoc = await db.collection('users').doc(currentUser.uid).get();
+  const requesterName = userDoc.exists ? userDoc.data().name : 'A student';
+
   const roomId = 'gyaansetu_' + Math.random().toString(36).substr(2, 9);
-  window.location.href = `classroom.html?room=${roomId}&mentor=${mentorId}`;
+
+  // Write session request to Firestore
+  await db.collection('sessions').add({
+    requesterId: currentUser.uid,
+    requesterName: requesterName,
+    mentorId: mentorId,
+    mentorName: mentorName,
+    status: 'pending',
+    roomId: roomId,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  showSessionToast(`📨 Session request sent to ${mentorName}! Waiting for them to accept...`, 'info');
 }
+
+function startIncomingRequestListener(uid) {
+  // Delete old pending requests to start clean
+  db.collection('sessions')
+    .where('mentorId', '==', uid)
+    .where('status', '==', 'pending')
+    .onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === 'added') {
+          const req = change.doc.data();
+          const docId = change.doc.id;
+          showIncomingRequest(docId, req.requesterName, req.roomId);
+        }
+      });
+    });
+
+  // Also listen for accepted state (requester's side)
+  db.collection('sessions')
+    .where('requesterId', '==', uid)
+    .where('status', '==', 'accepted')
+    .onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === 'added' || change.type === 'modified') {
+          const req = change.doc.data();
+          showSessionToast(`✅ ${req.mentorName} accepted! Joining classroom...`, 'success');
+          setTimeout(() => {
+            window.location.href = `classroom.html?room=${req.roomId}`;
+          }, 1500);
+        }
+      });
+    });
+}
+
+function showIncomingRequest(docId, requesterName, roomId) {
+  // Remove any old popups
+  const old = document.getElementById('sessionRequestPopup');
+  if (old) old.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'sessionRequestPopup';
+  popup.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    background:white;border-radius:16px;padding:24px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);border:2px solid var(--primary);
+    max-width:320px;animation:slideUp 0.3s ease;
+  `;
+  popup.innerHTML = `
+    <div style="font-size:1.8rem;margin-bottom:8px;">💬</div>
+    <div style="font-weight:700;font-size:1rem;color:var(--text-dark);margin-bottom:6px;">Session Request!</div>
+    <div style="font-size:0.88rem;color:var(--text-medium);margin-bottom:16px;"><strong>${requesterName}</strong> wants to learn from you!</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="acceptRequest('${docId}','${roomId}')" style="flex:1;background:var(--primary);color:white;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer;">✅ Accept</button>
+      <button onclick="declineRequest('${docId}')" style="flex:1;background:#f5f5f5;color:var(--text-medium);border:none;border-radius:10px;padding:10px;font-weight:600;cursor:pointer;">❌ Decline</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+}
+
+async function acceptRequest(docId, roomId) {
+  await db.collection('sessions').doc(docId).update({ status: 'accepted' });
+  document.getElementById('sessionRequestPopup')?.remove();
+  window.location.href = `classroom.html?room=${roomId}`;
+}
+
+async function declineRequest(docId) {
+  await db.collection('sessions').doc(docId).update({ status: 'declined' });
+  document.getElementById('sessionRequestPopup')?.remove();
+}
+
+function showSessionToast(msg, type) {
+  const old = document.getElementById('sessionToast');
+  if (old) old.remove();
+  const toast = document.createElement('div');
+  toast.id = 'sessionToast';
+  const bg = type === 'success' ? '#22c55e' : type === 'info' ? 'var(--primary)' : '#ef4444';
+  toast.style.cssText = `
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:${bg};color:white;padding:14px 24px;border-radius:99px;
+    font-weight:600;font-size:0.9rem;z-index:9999;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:slideUp 0.3s ease;
+  `;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// Add slideUp animation globally
+const styleEl = document.createElement('style');
+styleEl.textContent = `@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}`;
+document.head.appendChild(styleEl);
 
 // ---- Page Router — call correct init ----
 document.addEventListener('DOMContentLoaded', () => {
