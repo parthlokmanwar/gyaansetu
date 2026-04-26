@@ -97,7 +97,11 @@ function buildTutorialCard(tutorial) {
 
 // ---- Navigate to Tutorial Detail ----
 function openTutorial(id) {
-  window.location.href = `pages/detail.html?id=${id}`;
+  if (window.location.pathname.includes('/pages/')) {
+    window.location.href = `detail.html?id=${id}`; // Already in pages folder
+  } else {
+    window.location.href = `pages/detail.html?id=${id}`; // From root folder
+  }
 }
 
 // ---- Browse Page ----
