@@ -385,15 +385,16 @@ function initSubmitPage() {
 
 // ---- Tutorial Detail Page ----
 function initDetailPage() {
+  const loadingEl = document.getElementById('detailLoading');
+  const contentEl = document.getElementById('detailContent');
+  if (!loadingEl && !contentEl) return; // Guard clause: If not on detail page, don't execute
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
   if (!id) {
-    window.location.href = '../pages/browse.html';
+    window.location.href = window.location.pathname.includes('/pages/') ? 'browse.html' : 'pages/browse.html';
     return;
   }
-
-  const loadingEl = document.getElementById('detailLoading');
-  const contentEl = document.getElementById('detailContent');
 
   db.collection('tutorials').doc(id).get().then(doc => {
     if (!doc.exists) {
