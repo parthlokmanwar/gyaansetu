@@ -592,13 +592,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initMentorsPage();
   } else if (path.includes('dashboard')) {
     initDashboardPage();
+  } else if (path.includes('about') || path.includes('login') || path.includes('classroom')) {
+    // Static pages — no special init needed
+    // (navbar/logout is handled globally, nothing else to init)
   } else {
-    // Try all (for pages/ subfolder)
+    // Fallback for root or unknown paths
     initHomePage();
-    initBrowsePage();
-    initSubmitPage();
-    initDetailPage();
-    initMentorsPage();
   }
 
   // ---- PWA Injection ----
